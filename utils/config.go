@@ -16,7 +16,7 @@ type Configuration struct {
 	ApiPort string `env:"API_PORT" envDefault:"8080"`
 	IsDebug bool   `env:"DEBUG" envDefault:"False"`
 
-	RedisHost string `env:"REDIS_HOST" envDefault:"redis"`
+	RedisHost string `env:"REDIS_HOST" envDefault:"localhost"`
 	RedisPort string `env:"REDIS_PORT" envDefault:"6379"`
 }
 

@@ -66,7 +66,7 @@ func main() {
 				Usage: "Start the api. ",
 				Action: func(*cli.Context) error {
 					log.Println("Starting api server.")
-					api.StartApi(&utils.Config)
+					api.StartApi(&utils.Config, machineryServer)
 					return nil
 				},
 			},
