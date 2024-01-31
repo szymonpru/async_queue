@@ -14,16 +14,28 @@ import (
 
 func StartApi(config *utils.Configuration, server *machinery.Server) {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
 
-	// Define a GET endpoint to initiate the task
-	r.GET("/task/dummy", func(c *gin.Context) {
+	// Define a POST endpoint to trigger the add task
+	r.POST("/tasks/sum", func(c *gin.Context) {
+		var request struct {
+			Numbers []int64 `json:"numbers" binding:"required"`
+		}
+
+		// Bind JSON request to the struct
+		if err := c.BindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Prepare task parameters
 		task := tasks.Signature{
-			Name: "dummyTask",
+			Name: "sum",
+			Args: []tasks.Arg{
+				{
+					Type:  "[]int64",
+					Value: request.Numbers,
+				},
+			},
 		}
 
 		// Send the task to the worker asynchronously
@@ -38,14 +50,17 @@ func StartApi(config *utils.Configuration, server *machinery.Server) {
 		})
 	})
 
-	// Define a GET endpoint to check the status of the task by ID
-	r.GET("/task/:taskID/status", func(c *gin.Context) {
+	r.GET("/tasks/:taskID/status", func(c *gin.Context) {
 		taskID := c.Param("taskID")
 
 		// Use the task ID to query the status
 		taskState, err := server.GetBackend().GetState(taskID)
 		if err != nil {
-			log.Fatal(err)
+			// Handle the error and respond with an appropriate HTTP status
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Task not found",
+			})
+			return
 		}
 
 		// Respond with the task status

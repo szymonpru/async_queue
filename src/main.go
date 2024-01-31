@@ -42,7 +42,7 @@ func startMachineryServer() (*machinery.Server, error) {
 
 	// Register tasks
 	tasksMap := map[string]interface{}{
-		"dummyTask": tasks.DummyTask,
+		"sum": tasks.Sum,
 	}
 
 	return server, server.RegisterTasks(tasksMap)
